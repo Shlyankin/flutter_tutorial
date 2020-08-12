@@ -4,7 +4,16 @@ void main() {
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MainScreen()
+      routes: {
+        "/" : (BuildContext context) => MainScreen(),
+        "/second" : (BuildContext context) => SecondScreen(),
+      }, onGenerateRoute: (routeSettings) {
+        var path = routeSettings.name.split("/");
+        if (path[1] == "second") {
+          return MaterialPageRoute(builder: (context) => SecondScreen(id: path[2]), settings: routeSettings);
+        }
+
+    },
     )
   );
 }
@@ -15,9 +24,16 @@ class MainScreen extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(title: Text("Lesson 5 / Main Screen")),
         body: Center(
-          child: RaisedButton(child: Text("Открыть второе окно"), onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => SecondScreen()));
-          },),
+          child: Column(
+            children: [
+              RaisedButton(child: Text("Открыть второе окно"), onPressed: () {
+                Navigator.pushNamed(context, "/second");
+              },),
+              RaisedButton(child: Text("Открыть второе окно c значением 123"), onPressed: () {
+                Navigator.pushNamed(context, "/second/123");
+              },)
+            ],
+          )
         )
     );
   }
@@ -25,12 +41,18 @@ class MainScreen extends StatelessWidget {
 }
 
 class SecondScreen extends StatelessWidget {
+
+  String _id;
+  SecondScreen({String id}) {
+    _id = id;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Lesson 5 / Second Screen")),
+        appBar: AppBar(title: Text("Lesson 5 / Second Screen $_id")),
         body: Center(
-          child: RaisedButton(child: Text("Открыть второе окно"), onPressed: () {
+          child: RaisedButton(child: Text("Вернуться назад"), onPressed: () {
             Navigator.pop(context);
           },),
         )
